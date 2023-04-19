@@ -12,10 +12,12 @@ class MVVM: UIViewController {
     @IBOutlet weak var sfSymbolTextField: UITextField!
     @IBOutlet weak var tableView: UITableView!
     
+    private var viewModel: MVVMViewModel = MVVMViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configureTableView()
+        configureTextField()
     }
 
     private func configureTableView() {
@@ -29,25 +31,36 @@ class MVVM: UIViewController {
     }
     
     @IBAction func addButtonPressed(_ sender: UIButton) {
-        
+        if let sfSymbolname = sfSymbolTextField.text {
+            viewModel.setNewSFSymbol(name: sfSymbolname)
+        }
+        sfSymbolTextField.text = ""
+        tableView.reloadData()
     }
     
     @IBAction func clearButtonPressed(_ sender: UIButton) {
-        
+        viewModel.clearSFSymbols()
+        tableView.reloadData()
     }
 }
 
 extension MVVM: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        10
+        return viewModel.numberOfRowsInSection
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        if let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell.identifier, for: indexPath) as? TableViewCell {
+            cell.configureCell(sfSymbol: viewModel.getSFSymbol(index: indexPath.row))
+            return cell
+        }
+        
         return UITableViewCell()
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        80
+        viewModel.heightForRowAt
     }
 }
 
